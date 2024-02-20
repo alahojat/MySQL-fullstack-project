@@ -34,6 +34,7 @@ router.post('/add', function(req, res, next) {
   connection.connect((err) => {
     if (err) {
       console.log("err", err);
+      return res.status(500).json({ error: 'Internal server error' });
     }
 
     let sql = "INSERT into users (uuid, userName, userEmail, userPassword) VALUES (?, ?, ?, ?)";
@@ -42,8 +43,9 @@ router.post('/add', function(req, res, next) {
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
 
+
       console.log("new user", data);
-      res.json({message: "Your new user is added"});
+      res.json({ message: "You are logged in", user:uuid });
     })
   })
 });
