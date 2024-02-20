@@ -47,4 +47,29 @@ router.post('/', function(req, res, next) {
   })
 });
 
+
+// Login user
+router.post('/login', function(req, res, next) {
+
+  let checkEmail = req.body.email;
+  let checkPassword = req.body.userPassword;
+  let cryptedPassword = CryptoJS.AES.encrypt(checkPassword, "Salt Key").toString();
+  
+  connection.connect((err) => {
+    if (err) {
+      console.log("err", err);
+    }
+
+    let sql = "SELECT * FROM users WHERE userEmail = ? AND userPassword = ?";
+    let values = [checkEmail, cryptedPassword];
+
+    connection.query(sql, values, (err, data) => {
+      if (err) console.log("err", data);
+
+      console.log("user logged in", data);
+      res.json({message: "You are logged in"});
+    })
+  })
+});
+
 module.exports = router;
