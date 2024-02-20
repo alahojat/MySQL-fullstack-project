@@ -27,6 +27,7 @@ router.post('/', function(req, res, next) {
   let userName = req.body.userName;
   let userEmail = req.body.userEmail;
   let userPassword = req.body.userPassword;
+  let cryptedPassword = CryptoJS.AES.encrypt(userPassword, "Salt Key").toString();
   let uuid = randomUUID();
 
   connection.connect((err) => {
@@ -35,7 +36,7 @@ router.post('/', function(req, res, next) {
     }
 
     let sql = "INSERT into users (uuid, userName, userEmail, userPassword) VALUES (?, ?, ?, ?)";
-    let values = [uuid, userName, userEmail, userPassword];
+    let values = [uuid, userName, userEmail, cryptedPassword];
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
