@@ -21,6 +21,38 @@ router.get('/', function(req, res, next) {
   })
 });
 
+// Get a specific user by ID
+router.get('/:userId', function(req, res, next) {
+  const userId = req.params.userId; // Retrieve the user ID from the URL parameter
+
+  connection.connect((err) => {
+    if (err) {
+      console.log("Error connecting to the database:", err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    let sql = "SELECT * FROM users WHERE uuid = ?"; // SQL query to retrieve the user by ID
+    let values = [userId];
+
+    connection.query(sql, values, (err, data) => {
+      if (err) {
+        console.log("Error querying database:", err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      if (data.length === 0) {
+        // No user found with the provided ID
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // User found, send the user data in the response
+      res.json(data[0].userName);
+    });
+  });
+});
+
+
+
 
 // add a new user
 router.post('/add', function(req, res, next) {
@@ -42,7 +74,6 @@ router.post('/add', function(req, res, next) {
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
-
 
       console.log("new user", data);
       res.json({ message: "You are logged in", user:uuid });
