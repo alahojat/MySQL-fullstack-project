@@ -165,23 +165,12 @@ function printLoggedInPage() {
 
     let saveNoteBtn = document.createElement("button");
     saveNoteBtn.innerText = "Save note";
-    saveNoteBtn.addEventListener("click", () => {
-        postNewNoteToDatabase(noteTitle, textArea)
-    });
+    saveNoteBtn.addEventListener("click", function() {
+        postNewNoteToDatabase(noteTitle, textArea);});
 
     loggedInView.append(logoutBtn, loggedInViewTitle, noteTitle, textArea, saveNoteBtn);
 
-    tinymce.init({
-        selector: "#noteContent",
-        plugins: "image",
-        toolbar: "image undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
     
-        setup: function(editor) {
-            editor.on("change", function() {
-                editor.save();
-            })
-        }
-    })
 
     let uuid = localStorage.getItem("user");
 
@@ -192,27 +181,42 @@ function printLoggedInPage() {
         loggedInViewTitle.innerText = `What's on your mind today, ${userName}?`;
         console.log(userName);
     })
+
+    tinymce.init({
+        selector: "#noteContent",
+        toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
+    
+        setup: function(editor) {
+            editor.on("change", function() {
+                editor.save();
+            })
+        }
+    })
     
 }
 
 
 
 function postNewNoteToDatabase(noteTitle, textArea) {
-console.log("hej hej här är din nya note i databasen");
+    console.log("hej hej här är din nya note i databasen");
 
-let newNote = {
-    noteTitle: noteTitle.value,
-    noteText: textArea.value,
-}
+    let userId = localStorage.getItem("user");
+    
 
-fetch("http://localhost:3000/notes/add", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(newNote)
-})
-.then(res => res.json())
+    let newNote = {
+        uuid: userId,
+        title: noteTitle.value,
+        noteText: textArea.value
+    }
+
+    fetch("http://localhost:3000/notes/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newNote)
+    })
+    .then(res => res.json())
     .then(data => {
         if (noteTitle.value.trim() === '' || textArea.value.trim() === '') {
             // Display an error message or take appropriate action
@@ -221,8 +225,9 @@ fetch("http://localhost:3000/notes/add", {
         }
         console.log("Is this new note added?", data);
     })
-
 }
+
+
 
 
 function logoutUser() {
@@ -232,3 +237,6 @@ function logoutUser() {
     loginContainer.innerHTML = "";
     printLoginPage();
 }
+
+
+
