@@ -15,7 +15,7 @@ let createUserContainer = document.getElementById("createUserContainer");
 let createUserInputs = document.getElementById("createUserInputs");
 
 // LOGGED in view variables
-
+let loggedInViewContainer = document.getElementById("loggedInContainer");
 
 
 
@@ -151,11 +151,11 @@ function printLoggedInPage() {
 
     let logoutBtn = document.createElement("button");
     logoutBtn.innerText = "Logout";
+    logoutBtn.addEventListener("click", logoutUser);
 
     let loggedInView = document.getElementById("loggedInContainer");
 
     let loggedInViewTitle = document.createElement("h3");
-   // loggedInViewTitle.innerText = `What's on your mind today, ${localStorage.getItem("user")} ?`;
 
     let noteTitle = document.createElement("input");
     noteTitle.placeholder = "Title...";
@@ -165,7 +165,9 @@ function printLoggedInPage() {
 
     let saveNoteBtn = document.createElement("button");
     saveNoteBtn.innerText = "Save note";
-    saveNoteBtn.addEventListener("click", postNewNoteToDatabase);
+    saveNoteBtn.addEventListener("click", () => {
+        postNewNoteToDatabase(noteTitle, textArea)
+    });
 
     loggedInView.append(logoutBtn, loggedInViewTitle, noteTitle, textArea, saveNoteBtn);
 
@@ -188,21 +190,20 @@ function printLoggedInPage() {
     .then(data => {
         const userName = data.userName;
         loggedInViewTitle.innerText = `What's on your mind today, ${userName}?`;
+        console.log(userName);
     })
     
-
 }
 
 
 
-function postNewNoteToDatabase() {
+function postNewNoteToDatabase(noteTitle, textArea) {
 console.log("hej hej här är din nya note i databasen");
 
 let newNote = {
     noteTitle: noteTitle.value,
     noteText: textArea.value,
 }
-
 
 fetch("http://localhost:3000/notes/add", {
     method: "POST",
@@ -221,9 +222,13 @@ fetch("http://localhost:3000/notes/add", {
         console.log("Is this new note added?", data);
     })
 
-
 }
 
 
-
-
+function logoutUser() {
+    console.log("User is logged out");
+    localStorage.removeItem("user");
+    loggedInViewContainer.innerHTML = "";
+    loginContainer.innerHTML = "";
+    printLoginPage();
+}
