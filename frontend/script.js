@@ -1,27 +1,23 @@
 // LOGIN PAGE VARIABLES
-
 let loginPage = document.getElementById("loginPageContainer");
-
 let loginBtn = document.getElementById("loginBtn");
-
 let inputEmail = document.getElementById("emailLogin");
 let inputPassword = document.getElementById("passwordLogin");
-
 let loginContainer = document.getElementById("loginInputContainer");
 
 // CREATE NEW ACCOUNT VARIABLES
-
 let createUserContainer = document.getElementById("createUserContainer");
 let createUserInputs = document.getElementById("createUserInputs");
 
 // LOGGED in view variables
 let loggedInViewContainer = document.getElementById("loggedInContainer");
-
+let noteContainer = document.getElementById("noteContentContainer");
 
 
 if (localStorage.getItem("user")) {
     //är inloggad
     printLoggedInPage();
+    
 } else {
     // är inte inloggad
     printLoginPage();
@@ -53,8 +49,6 @@ function printLoginPage() {
     createNewUserBtn.innerText = "Create account";
     createNewUserBtn.addEventListener("click", printNewUserPage);
 
-
-
     loginBtn.addEventListener("click", () => {
         let loginUser = {userEmail: emailLogin.value, userPassword: passwordLogin.value};
      
@@ -76,15 +70,11 @@ function printLoginPage() {
          localStorage.setItem("user", data.user)
          loginPage.innerHTML = "";
          printLoggedInPage();
-        })
-     
+        })   
      })
 
      loginContainer.append(pageTitle, emailLogin, passwordLogin, loginBtn, createNewUserBtn);
-
      loginPage.append(loginImg, loginContainer);
-     
-   
 }
 
 function printNewUserPage() {
@@ -112,8 +102,6 @@ function printNewUserPage() {
     let createAccountBtn = document.createElement("button");
     createAccountBtn.innerText = "Create account";
 
-    
-
     createAccountBtn.addEventListener("click", () => {
         let newUser = {userName: createName.value, userEmail: createEmail.value, userPassword: createPassword.value};
      
@@ -135,14 +123,11 @@ function printNewUserPage() {
            loginPage.innerHTML = "";
            printLoggedInPage();
         })
-     
      })
 
     createUserInputs.append(newUserPageTitle, createName, createEmail, createPassword, createAccountBtn);
     createUserContainer.append(createUserInputs, newUserImg);
-   
 }
-
 
 function printLoggedInPage() {
     loginPage.innerHTML = "";
@@ -169,9 +154,7 @@ function printLoggedInPage() {
         postNewNoteToDatabase(noteTitle, textArea);});
 
     loggedInView.append(logoutBtn, loggedInViewTitle, noteTitle, textArea, saveNoteBtn);
-
-    
-
+   
     let uuid = localStorage.getItem("user");
 
     fetch(`http://localhost:3000/users/${uuid}`) 
@@ -192,17 +175,61 @@ function printLoggedInPage() {
             })
         }
     })
-    
+    printAllNotesForUser(); 
 }
 
 
-
-function postNewNoteToDatabase(noteTitle, textArea) {
-    console.log("hej hej här är din nya note i databasen");
+function printAllNotesForUser() {
+    noteContainer.innerHTML = "";
 
     let userId = localStorage.getItem("user");
-    
 
+    fetch(`http://localhost:3000/notes/${userId}`)
+    .then(res => res.json())
+    .then(data => {
+        console.log("All notes", data);
+    
+        data.map(note => {
+        let img = document.createElement("img");
+        img.src = "assets/white-monstera-leaf.jpg";
+        img.alt = "White matte monstera leaf on white background";
+        img.width = 254;
+        img.height = 341;
+
+        let imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+        imageContainer.appendChild(img);
+
+        let li = document.createElement("li");
+        li.classList.add("noteStyling");
+
+        let noteTitle = document.createElement("h4");
+        noteTitle.innerText = note.title;
+
+        let text = document.createElement("p");
+        text.innerHTML = note.noteText;
+
+        let editSingleNote = document.createElement("button");
+        editSingleNote.innerText = "Edit";
+
+        let deleteSingleNoteBtn = document.createElement("button");
+        deleteSingleNoteBtn.innerText = "Delete";
+        deleteSingleNoteBtn.addEventListener("click", function() {
+            deleteSingleNote(note.uuid);
+        } );
+       
+        li.append(img, noteTitle, text, editSingleNote, deleteSingleNoteBtn);
+        noteContainer.append(li);
+    });
+    })
+    .catch(error => {
+        console.error("Error fetching notes:", error);
+    });
+}
+
+function postNewNoteToDatabase(noteTitle, textArea) {
+    let userId = localStorage.getItem("user");
+    
     let newNote = {
         uuid: userId,
         title: noteTitle.value,
@@ -213,7 +240,7 @@ function postNewNoteToDatabase(noteTitle, textArea) {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
-        },
+        },A
         body: JSON.stringify(newNote)
     })
     .then(res => res.json())
@@ -224,7 +251,25 @@ function postNewNoteToDatabase(noteTitle, textArea) {
             return; // Exit the function early
         }
         console.log("Is this new note added?", data);
+        noteTitle.value = "";
+        tinymce.get("noteContent").setContent("");                     
     })
+    printAllNotesForUser();
+}
+
+function deleteSingleNote(uuid) {
+    fetch("http://localhost:3000/notes/delete", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ uuid: uuid })
+       })
+       .then(res => res.json())
+       .then(data => {
+           console.log("the single note deleted", data);         
+       })
+       printAllNotesForUser();   
 }
 
 
@@ -235,8 +280,12 @@ function logoutUser() {
     localStorage.removeItem("user");
     loggedInViewContainer.innerHTML = "";
     loginContainer.innerHTML = "";
+    noteContainer.innerHTML = "";
     printLoginPage();
 }
+
+
+
 
 
 
