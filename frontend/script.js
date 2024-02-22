@@ -190,37 +190,41 @@ function printAllNotesForUser() {
         console.log("All notes", data);
     
         data.map(note => {
-        let img = document.createElement("img");
-        img.src = "assets/white-monstera-leaf.jpg";
-        img.alt = "White matte monstera leaf on white background";
-        img.width = 254;
-        img.height = 341;
+            let img = document.createElement("img");
+            img.src = "assets/white-monstera-leaf.jpg";
+            img.alt = "White matte monstera leaf on white background";
+            img.width = 254;
+            img.height = 341;
 
-        let imageContainer = document.createElement("div");
-        imageContainer.classList.add("image-container");
-        imageContainer.appendChild(img);
+            let imageContainer = document.createElement("div");
+            imageContainer.classList.add("image-container");
+            imageContainer.appendChild(img);
 
-        let li = document.createElement("li");
-        li.classList.add("noteStyling");
+            let li = document.createElement("li");
+            li.classList.add("noteStyling");
 
-        let noteTitle = document.createElement("h4");
-        noteTitle.innerText = note.title;
+            let noteTitle = document.createElement("h4");
+            noteTitle.innerText = note.title;
 
-        let text = document.createElement("p");
-        text.innerHTML = note.noteText;
+            let text = document.createElement("p");
+            text.innerHTML = note.noteText;
+            text.classList.add("note-text"); 
 
-        let editSingleNote = document.createElement("button");
-        editSingleNote.innerText = "Edit";
+            let editSingleNote = document.createElement("button");
+            editSingleNote.innerText = "Edit";
+            editSingleNote.addEventListener("click", function() {
+                editNoteText(noteTitle, text, note.uuid);
+            });
 
-        let deleteSingleNoteBtn = document.createElement("button");
-        deleteSingleNoteBtn.innerText = "Delete";
-        deleteSingleNoteBtn.addEventListener("click", function() {
-            deleteSingleNote(note.uuid);
-        } );
-       
-        li.append(img, noteTitle, text, editSingleNote, deleteSingleNoteBtn);
-        noteContainer.append(li);
-    });
+            let deleteSingleNoteBtn = document.createElement("button");
+            deleteSingleNoteBtn.innerText = "Delete";
+            deleteSingleNoteBtn.addEventListener("click", function() {
+                deleteSingleNote(note.uuid);
+            });
+
+            li.append(img, noteTitle, text, editSingleNote, deleteSingleNoteBtn);
+            noteContainer.append(li);
+        });
     })
     .catch(error => {
         console.error("Error fetching notes:", error);
@@ -240,15 +244,14 @@ function postNewNoteToDatabase(noteTitle, textArea) {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
-        },A
+        },
         body: JSON.stringify(newNote)
     })
     .then(res => res.json())
     .then(data => {
-        if (noteTitle.value.trim() === '' || textArea.value.trim() === '') {
-            // Display an error message or take appropriate action
+        if (noteTitle.value.trim() === '' || textArea.value.trim() === '') {  
             console.log("Please type new note");
-            return; // Exit the function early
+            return; 
         }
         console.log("Is this new note added?", data);
         noteTitle.value = "";
@@ -272,8 +275,63 @@ function deleteSingleNote(uuid) {
        printAllNotesForUser();   
 }
 
+function editNoteText(noteTitle, text, uuid) {
+    const currentText = text.innerHTML; 
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = currentText; 
+    
+    text.replaceWith(textarea);
+
+    tinymce.init({
+        selector: `textarea`,
+        toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
+        setup: function(editor) {
+            editor.on("change", function() {
+                editor.save();
+            });
+        }
+    });
+
+    const editButton = textarea.nextElementSibling;
+    editButton.innerText = "Save";
+    editButton.addEventListener("click", function() {
+        saveNoteText(noteTitle, textarea, text, uuid);
+    })
+        
+    console.log("här är min notetitel först", noteTitle);
+}
 
 
+function saveNoteText(noteTitle, textarea, text, uuid) {
+    const updatedText = tinymce.get(textarea.id).getContent(); 
+
+    fetch(`http://localhost:3000/notes/edit/${uuid}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ noteTitle: noteTitle, noteText: updatedText })
+    })
+    .then(res => res.json())
+    .then(data => {
+        text.innerHTML = updatedText;
+        textarea.replaceWith(text); 
+
+        // Remove the TinyMCE editor
+        tinymce.get(textarea.id).remove();
+        
+        // Change the button text back to "Edit"
+        const editButton = text.nextElementSibling;
+        editButton.innerText = "Edit";
+        editButton.onclick = function() {
+            editNoteText(noteTitle, text, uuid); 
+        };
+        
+    })
+    .catch(error => {
+        console.error("Error updating note:", error);
+    });
+}
 
 function logoutUser() {
     console.log("User is logged out");
