@@ -4,13 +4,13 @@ const { randomUUID } = require('crypto');
 
 const connection = require('../lib/conn.js');
 
-
-// Get all notes
-router.get('/', function(req, res, next) {
+// GET all notes for testing purposes only
+router.get('/', function(req, res) {
   connection.connect((err) => {
     if (err) {
       console.log("err", err);
     }
+
     let sql = "SELECT * FROM notes";
 
     connection.query(sql, (err, data) => {
@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
   })
 });
 
-// Get all notes for specific user
+// GET all notes for specific user using ID
 router.get('/:userID', function(req, res) {
   const userID = req.params.userID;
 
@@ -29,6 +29,7 @@ router.get('/:userID', function(req, res) {
     if (err) {
       console.log("err", err);
     }
+
     let sql = "SELECT * FROM notes WHERE userID = ?";
 
     connection.query(sql, [userID], (err, data) => {
@@ -39,7 +40,7 @@ router.get('/:userID', function(req, res) {
   })
 });
 
-// add a new note
+// POST add a new note for a specific user
 router.post('/add', function(req, res, next) {
   let noteTitle = req.body.title;
   let noteText = req.body.noteText;
@@ -63,7 +64,6 @@ router.post('/add', function(req, res, next) {
 
       console.log("New note added:", data);
       
-      // Construct the response object with the newly added note data
       let newNote = {
         title: noteTitle,
         noteText: noteText,
@@ -71,18 +71,16 @@ router.post('/add', function(req, res, next) {
         uuid: noteID
       };
 
-      return res.status(201).json(newNote); // Respond with the newly added note
+      return res.status(201).json(newNote);
     });
   });
 });
 
-// edit a note
+// PUT edit an existing note
 router.put('/edit/:noteID', function(req, res) {
   let noteID = req.params.noteID
-  
   let noteText = req.body.noteText;
  
-
   connection.connect((err) => {
     if (err) {
       console.log("err", err);
@@ -101,10 +99,8 @@ router.put('/edit/:noteID', function(req, res) {
 });
 
 
-
-// delete a specific note
-router.delete('/delete', function(req, res, next) {
-
+// DELETE a specific note for a user
+router.delete('/delete', function(req, res) {
 let specificNote = req.body.uuid;
 
   connection.connect((err) => {
@@ -118,8 +114,8 @@ let specificNote = req.body.uuid;
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
 
-      console.log("deleted note", data);
-      res.json(values);
+    console.log("deleted note", data);
+    res.json(values);
     })
   })
 });

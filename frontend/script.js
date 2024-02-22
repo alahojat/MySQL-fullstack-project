@@ -167,6 +167,9 @@ function printLoggedInPage() {
 
     tinymce.init({
         selector: "#noteContent",
+        width: 800,
+        statusbar: false,
+        menubar: false,
         toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
     
         setup: function(editor) {
@@ -191,10 +194,10 @@ function printAllNotesForUser() {
     
         data.map(note => {
             let img = document.createElement("img");
-            img.src = "assets/white-monstera-leaf.jpg";
+            img.src = "assets/white-flower.jpg";
             img.alt = "White matte monstera leaf on white background";
             img.width = 254;
-            img.height = 341;
+            img.height = 254;
 
             let imageContainer = document.createElement("div");
             imageContainer.classList.add("image-container");
@@ -281,7 +284,7 @@ function editNoteText(noteTitle, text, uuid) {
     textarea.innerHTML = currentText; 
     
     text.replaceWith(textarea);
-
+    
     tinymce.init({
         selector: `textarea`,
         toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
@@ -292,18 +295,17 @@ function editNoteText(noteTitle, text, uuid) {
         }
     });
 
-    const editButton = textarea.nextElementSibling;
-    editButton.innerText = "Save";
-    editButton.addEventListener("click", function() {
-        saveNoteText(noteTitle, textarea, text, uuid);
-    })
-        
-    console.log("här är min notetitel först", noteTitle);
+    const editButton = textarea.nextElementSibling; 
+    if (editButton) {
+        editButton.innerText = "Save";
+        editButton.addEventListener("click", function() {
+            saveNoteText(noteTitle, textarea, text, uuid);
+        });
+    } 
 }
 
-
 function saveNoteText(noteTitle, textarea, text, uuid) {
-    const updatedText = tinymce.get(textarea.id).getContent(); 
+    const updatedText = tinymce.get(textarea.id).getContent();
 
     fetch(`http://localhost:3000/notes/edit/${uuid}`, {
         method: "PUT",
@@ -315,18 +317,13 @@ function saveNoteText(noteTitle, textarea, text, uuid) {
     .then(res => res.json())
     .then(data => {
         text.innerHTML = updatedText;
-        textarea.replaceWith(text); 
-
-        // Remove the TinyMCE editor
+        textarea.replaceWith(text);
         tinymce.get(textarea.id).remove();
-        
-        // Change the button text back to "Edit"
         const editButton = text.nextElementSibling;
         editButton.innerText = "Edit";
         editButton.onclick = function() {
             editNoteText(noteTitle, text, uuid); 
         };
-        
     })
     .catch(error => {
         console.error("Error updating note:", error);
