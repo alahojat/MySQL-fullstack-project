@@ -31,7 +31,7 @@ router.get('/:userId', function(req, res, next) {
       return res.status(500).json({ error: 'Internal server error' });
     }
 
-    let sql = "SELECT * FROM users WHERE uuid = ?"; // SQL query to retrieve the user by ID
+    let sql = "SELECT userName FROM users WHERE uuid = ?"; // SQL query to retrieve the user by ID
     let values = [userId];
 
     connection.query(sql, values, (err, data) => {
@@ -46,12 +46,10 @@ router.get('/:userId', function(req, res, next) {
       }
 
       // User found, send the user data in the response
-      res.json(data[0].userName);
+      res.json(data[0]);
     });
   });
 });
-
-
 
 
 // add a new user

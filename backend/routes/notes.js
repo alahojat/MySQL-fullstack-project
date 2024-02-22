@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 });
 
 // Get all notes for specific user
-router.get('/:userID', function(req, res, next) {
+router.get('/:userID', function(req, res) {
   const userID = req.params.userID;
 
   connection.connect((err) => {
@@ -41,7 +41,6 @@ router.get('/:userID', function(req, res, next) {
 
 // add a new note
 router.post('/add', function(req, res, next) {
-
   let noteTitle = req.body.title;
   let noteText = req.body.noteText;
   let userID = req.body.uuid;
@@ -50,24 +49,37 @@ router.post('/add', function(req, res, next) {
   connection.connect((err) => {
     if (err) {
       console.log("err", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
 
     let sql = "INSERT into notes (title, noteText, userID, uuid) VALUES (?, ?, ?, ?)";
     let values = [noteTitle, noteText, userID, noteID];
 
     connection.query(sql, values, (err, data) => {
-      if (err) console.log("err", data);
+      if (err) {
+        console.log("err", data);
+        return res.status(500).json({ error: "Error adding new note" });
+      }
 
-      console.log("to do note", data);
-      res.json({message: "New note is saved"});
-    })
-  })
+      console.log("New note added:", data);
+      
+      // Construct the response object with the newly added note data
+      let newNote = {
+        title: noteTitle,
+        noteText: noteText,
+        userID: userID,
+        uuid: noteID
+      };
+
+      return res.status(201).json(newNote); // Respond with the newly added note
+    });
+  });
 });
 
 // edit a note
-router.put('/edit/:noteID', function(req, res, next) {
+router.put('/edit/:noteID', function(req, res) {
   let noteID = req.params.noteID
-  let noteTitle = req.body.title;
+  
   let noteText = req.body.noteText;
  
 
@@ -76,14 +88,14 @@ router.put('/edit/:noteID', function(req, res, next) {
       console.log("err", err);
     }
 
-    let sql = "UPDATE notes SET title = ?, noteText = ? WHERE uuid = ?";
-    let values = [noteTitle, noteText, noteID];
+    let sql = "UPDATE notes SET noteText = ? WHERE uuid = ?";
+    let values = [noteText, noteID];
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
 
       console.log("Your note is updated!");
-      res.json({message: "Your note is updated!"});
+     res.json({ noteID: noteID, noteText: noteText });
     })
   })
 });
@@ -107,7 +119,7 @@ let specificNote = req.body.uuid;
       if (err) console.log("err", data);
 
       console.log("deleted note", data);
-      res.json({message: "This note is deleted"});
+      res.json(values);
     })
   })
 });
