@@ -1,3 +1,172 @@
+@import 'partials/mixins';
+@import 'partials/variables';
+
 body {
-    background-color: antiquewhite;
+    margin: 0;
+    padding: 0;
+    background-color: #ebebeb;
+
+
 }
+main {
+    margin: 0;
+    padding: 0;
+    background-color: #ebebeb;
+    
+}
+h1, h2, h3 {
+    @include main-headings;
+}
+
+h4 {
+    @include second-headings;
+}
+p {
+    color: $base-font-family;
+}
+
+
+
+#loginPageContainer {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+    img {
+       
+        width: 100%;  
+        height: auto; 
+    }
+    #loginInputContainer {
+        padding-left: 40px;
+        padding-right: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        button.primaryBtn {
+            @include primary-button;
+        }
+        button.primaryBtn:hover {
+            background-color: #748ca9; 
+        }
+        button {
+           
+            @include secondary-button;
+        }
+       
+        
+    }
+    
+}
+
+#createUserContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    img {
+        width: 100%;
+        height: auto;   
+    }
+
+    #createUserInputs {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    button {
+        @include primary-button;
+    }
+    button:hover {
+        background-color: #748ca9; 
+    }
+}
+
+.hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+
+
+#loggedInContainer {
+    margin: 0;
+    padding: 0px 100px 0px 100px;
+    h4 {
+        margin: 20px 0px 20px 0px;
+    }
+  
+   input{
+    padding: 0px 10px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+   }
+  
+    button {
+        @include primary-button;
+    }
+    button:hover {
+        background-color: #748ca9; 
+    }
+    button.logoutBtn {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+    button.logoutBtn:hover {
+        background-color: #748ca9; 
+    }
+}
+
+
+
+input {
+    @include input-fields;
+}
+
+primaryBtn {
+    background-color: black;
+}
+
+#noteContentContainer {
+   align-items: center;
+    .noteStyling {
+        
+        width: 70vw;
+        padding: 30px;
+        background-color: #E6E6E6;
+        border: 1px solid black;
+        list-style: none;
+        margin-bottom: 20px;
+        button {
+            @include primary-button;
+            margin: 20px
+    
+        }
+        button.deleteNoteBtn {
+            @include secondary-button;
+            
+        }  
+    }
+}
+
+
+
+
+
+
+
+
+
