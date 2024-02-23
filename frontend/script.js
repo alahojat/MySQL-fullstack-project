@@ -18,19 +18,22 @@ if (localStorage.getItem("user")) {
     //är inloggad
     printLoggedInPage();
     
+    
 } else {
     // är inte inloggad
     printLoginPage();
 }
 
 function printLoginPage() {
+   // noteContainer.classList.add("hidden");
+
+  
     loginPage.innerHTML = "";
    
     let loginImg = document.createElement("img");
-    loginImg.src = "assets/white-monstera-leaf.jpg";
+    loginImg.src = "assets/white-monstera-leaf-2.jpg";
     loginImg.alt = "White matte monstera leaf on white background";
-    loginImg.width = 254;
-    loginImg.height = 341;
+    
 
     let pageTitle = document.createElement("h1");
     pageTitle.innerText = "What's on your mind today?";
@@ -44,9 +47,11 @@ function printLoginPage() {
 
     let loginBtn = document.createElement("button");
     loginBtn.innerText = "Login";
+    loginBtn.classList.add("primaryBtn");
 
     let createNewUserBtn = document.createElement("button");
     createNewUserBtn.innerText = "Create account";
+    createNewUserBtn.classList.add("secondaryBtn");
     createNewUserBtn.addEventListener("click", printNewUserPage);
 
     loginBtn.addEventListener("click", () => {
@@ -78,14 +83,13 @@ function printLoginPage() {
 }
 
 function printNewUserPage() {
+    
     loginPage.innerHTML = "";
         
     let newUserImg = document.createElement("img");
     newUserImg.src = "assets/silver-monstera-leaf.jpg";
     newUserImg.alt = "Silver monstera leaf against white background";
-    newUserImg.width = 254;
-    newUserImg.height = 341;
-
+   
     let newUserPageTitle = document.createElement("h1");
     newUserPageTitle.innerText = "Create an account";
 
@@ -100,6 +104,7 @@ function printNewUserPage() {
     createPassword.type = "password";
 
     let createAccountBtn = document.createElement("button");
+    createAccountBtn.classList.add("createAccountBtn");
     createAccountBtn.innerText = "Create account";
 
     createAccountBtn.addEventListener("click", () => {
@@ -130,12 +135,14 @@ function printNewUserPage() {
 }
 
 function printLoggedInPage() {
+    
     loginPage.innerHTML = "";
     createUserContainer.innerHTML = "";
     console.log("inloggad sida");
 
     let logoutBtn = document.createElement("button");
     logoutBtn.innerText = "Logout";
+    logoutBtn.classList.add("logoutBtn")
     logoutBtn.addEventListener("click", logoutUser);
 
     let loggedInView = document.getElementById("loggedInContainer");
@@ -150,6 +157,7 @@ function printLoggedInPage() {
 
     let saveNoteBtn = document.createElement("button");
     saveNoteBtn.innerText = "Save note";
+    saveNoteBtn.classList.add("saveNoteBtn");
     saveNoteBtn.addEventListener("click", function() {
         postNewNoteToDatabase(noteTitle, textArea);});
 
@@ -167,7 +175,7 @@ function printLoggedInPage() {
 
     tinymce.init({
         selector: "#noteContent",
-        width: 800,
+        height: 200,
         statusbar: false,
         menubar: false,
         toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
@@ -193,16 +201,8 @@ function printAllNotesForUser() {
         console.log("All notes", data);
     
         data.map(note => {
-            let img = document.createElement("img");
-            img.src = "assets/white-flower.jpg";
-            img.alt = "White matte monstera leaf on white background";
-            img.width = 254;
-            img.height = 254;
-
-            let imageContainer = document.createElement("div");
-            imageContainer.classList.add("image-container");
-            imageContainer.appendChild(img);
-
+            
+        
             let li = document.createElement("li");
             li.classList.add("noteStyling");
 
@@ -221,11 +221,12 @@ function printAllNotesForUser() {
 
             let deleteSingleNoteBtn = document.createElement("button");
             deleteSingleNoteBtn.innerText = "Delete";
+            deleteSingleNoteBtn.classList.add("deleteNoteBtn");
             deleteSingleNoteBtn.addEventListener("click", function() {
                 deleteSingleNote(note.uuid);
             });
 
-            li.append(img, noteTitle, text, editSingleNote, deleteSingleNoteBtn);
+            li.append(noteTitle, text, editSingleNote, deleteSingleNoteBtn);
             noteContainer.append(li);
         });
     })
@@ -284,9 +285,11 @@ function editNoteText(noteTitle, text, uuid) {
     textarea.innerHTML = currentText; 
     
     text.replaceWith(textarea);
-    
+
     tinymce.init({
         selector: `textarea`,
+        statusbar: false,
+        menubar: false,
         toolbar: "undo redo forecolor backcolor styleselect bold italic alignleft alignright code",
         setup: function(editor) {
             editor.on("change", function() {
@@ -337,9 +340,8 @@ function logoutUser() {
     loginContainer.innerHTML = "";
     noteContainer.innerHTML = "";
     printLoginPage();
+   
 }
-
-
 
 
 
