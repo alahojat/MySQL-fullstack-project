@@ -62,11 +62,8 @@ function printLoginPage() {
         .then(res => res.json())
         .then(data => {
             if (emailLogin.value.trim() === '' || passwordLogin.value.trim() === '') {
-                // Display an error message or take appropriate action
-                console.log("Please fill out all fields!");
-                return; // Exit the function early
+                return;
             }
-         console.log("hallå", data);
          localStorage.setItem("user", data.user)
          loginPage.innerHTML = "";
          printLoggedInPage();
@@ -104,7 +101,6 @@ function printNewUserPage() {
 
     createAccountBtn.addEventListener("click", () => {
         if (createName.value.trim() === '' || createEmail.value.trim() === '' || createPassword.value.trim() === '') {
-            console.log("Please fill out all fields!");
             return; 
         }
         let newUser = {userName: createName.value, userEmail: createEmail.value, userPassword: createPassword.value};
@@ -133,7 +129,6 @@ function printNewUserPage() {
 function printLoggedInPage() {
     loginPage.innerHTML = "";
     createUserContainer.innerHTML = "";
-    console.log("inloggad sida");
 
     let logoutBtn = document.createElement("button");
     logoutBtn.innerText = "Logout";
@@ -165,7 +160,6 @@ function printLoggedInPage() {
     .then(data => {
         const userName = data.userName;
         loggedInViewTitle.innerText = `What's on your mind today, ${userName}?`;
-        console.log(userName);
     })
 
     tinymce.init({
@@ -192,7 +186,6 @@ function printAllNotesForUser() {
     fetch(`http://localhost:3000/notes/${userId}`)
     .then(res => res.json())
     .then(data => {
-        console.log("All notes", data);
         data.map(note => {
             let li = document.createElement("li");
             li.classList.add("noteStyling");
@@ -246,14 +239,13 @@ function postNewNoteToDatabase(noteTitle, textArea) {
     .then(res => res.json())
     .then(data => {
         if (noteTitle.value.trim() === '' || textArea.value.trim() === '') {  
-            console.log("Please type new note");
             return; 
         }
-        console.log("Is this new note added?", data);
         noteTitle.value = "";
-        tinymce.get("noteContent").setContent("");                     
+        tinymce.get("noteContent").setContent("");  
+        printAllNotesForUser();
     })
-    printAllNotesForUser();
+   
 }
 
 // function to delete single note
@@ -267,7 +259,6 @@ function deleteSingleNote(uuid) {
        })
        .then(res => res.json())
        .then(data => {
-           console.log("the single note deleted", data);   
            printAllNotesForUser();       
        })
          
@@ -331,7 +322,6 @@ function saveNoteText(noteTitle, textarea, text, uuid) {
 
 // function for logout button
 function logoutUser() {
-    console.log("User is logged out");
     localStorage.removeItem("user");
     loggedInViewContainer.innerHTML = "";
     loginContainer.innerHTML = "";
