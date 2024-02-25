@@ -1,39 +1,34 @@
-// LOGIN PAGE VARIABLES
+// GLOBAL LOGIN PAGE VARIABLES
 let loginPage = document.getElementById("loginPageContainer");
 let loginBtn = document.getElementById("loginBtn");
 let inputEmail = document.getElementById("emailLogin");
 let inputPassword = document.getElementById("passwordLogin");
 let loginContainer = document.getElementById("loginInputContainer");
 
-// CREATE NEW ACCOUNT VARIABLES
+// GLOBAL CREATE NEW ACCOUNT VARIABLES
 let createUserContainer = document.getElementById("createUserContainer");
 let createUserInputs = document.getElementById("createUserInputs");
 
-// LOGGED in view variables
+// GLOBAL LOGGED IN VIEW VARIABLES
 let loggedInViewContainer = document.getElementById("loggedInContainer");
 let noteContainer = document.getElementById("noteContentContainer");
 
-
+// check state of logged in user
 if (localStorage.getItem("user")) {
     //är inloggad
-    printLoggedInPage();
-    
-    
+    printLoggedInPage();  
 } else {
-    // är inte inloggad
     printLoginPage();
 }
 
-function printLoginPage() {
-   // noteContainer.classList.add("hidden");
 
-  
+// print out loginpage
+function printLoginPage() {
     loginPage.innerHTML = "";
    
     let loginImg = document.createElement("img");
     loginImg.src = "assets/white-monstera-leaf-2.jpg";
     loginImg.alt = "White matte monstera leaf on white background";
-    
 
     let pageTitle = document.createElement("h1");
     pageTitle.innerText = "What's on your mind today?";
@@ -82,8 +77,8 @@ function printLoginPage() {
      loginPage.append(loginImg, loginContainer);
 }
 
+// print out create new user page
 function printNewUserPage() {
-    
     loginPage.innerHTML = "";
         
     let newUserImg = document.createElement("img");
@@ -108,6 +103,10 @@ function printNewUserPage() {
     createAccountBtn.innerText = "Create account";
 
     createAccountBtn.addEventListener("click", () => {
+        if (createName.value.trim() === '' || createEmail.value.trim() === '' || createPassword.value.trim() === '') {
+            console.log("Please fill out all fields!");
+            return; 
+        }
         let newUser = {userName: createName.value, userEmail: createEmail.value, userPassword: createPassword.value};
      
         fetch("http://localhost:3000/users/add", {
@@ -119,11 +118,7 @@ function printNewUserPage() {
         })
         .then(res => res.json())
         .then(data => {
-            if (createName.value.trim() === '' || createEmail.value.trim() === '' || createPassword.value.trim() === '') {
-                // Display an error message or take appropriate action
-                console.log("Please fill out all fields!");
-                return; // Exit the function early
-            }
+            
            localStorage.setItem("user", data.user);
            loginPage.innerHTML = "";
            printLoggedInPage();
@@ -134,8 +129,8 @@ function printNewUserPage() {
     createUserContainer.append(createUserInputs, newUserImg);
 }
 
+// print out logged in view
 function printLoggedInPage() {
-    
     loginPage.innerHTML = "";
     createUserContainer.innerHTML = "";
     console.log("inloggad sida");
@@ -189,20 +184,16 @@ function printLoggedInPage() {
     printAllNotesForUser(); 
 }
 
-
+// print out all notes for logged in user
 function printAllNotesForUser() {
     noteContainer.innerHTML = "";
-
     let userId = localStorage.getItem("user");
 
     fetch(`http://localhost:3000/notes/${userId}`)
     .then(res => res.json())
     .then(data => {
         console.log("All notes", data);
-    
         data.map(note => {
-            
-        
             let li = document.createElement("li");
             li.classList.add("noteStyling");
 
@@ -235,6 +226,7 @@ function printAllNotesForUser() {
     });
 }
 
+// function to write new post
 function postNewNoteToDatabase(noteTitle, textArea) {
     let userId = localStorage.getItem("user");
     
@@ -264,6 +256,7 @@ function postNewNoteToDatabase(noteTitle, textArea) {
     printAllNotesForUser();
 }
 
+// function to delete single note
 function deleteSingleNote(uuid) {
     fetch("http://localhost:3000/notes/delete", {
         method: "DELETE",
@@ -274,11 +267,13 @@ function deleteSingleNote(uuid) {
        })
        .then(res => res.json())
        .then(data => {
-           console.log("the single note deleted", data);         
+           console.log("the single note deleted", data);   
+           printAllNotesForUser();       
        })
-       printAllNotesForUser();   
+         
 }
 
+// function to edit existing note
 function editNoteText(noteTitle, text, uuid) {
     const currentText = text.innerHTML; 
     const textarea = document.createElement("textarea");
@@ -307,6 +302,7 @@ function editNoteText(noteTitle, text, uuid) {
     } 
 }
 
+// function to save edited note
 function saveNoteText(noteTitle, textarea, text, uuid) {
     const updatedText = tinymce.get(textarea.id).getContent();
 
@@ -333,14 +329,14 @@ function saveNoteText(noteTitle, textarea, text, uuid) {
     });
 }
 
+// function for logout button
 function logoutUser() {
     console.log("User is logged out");
     localStorage.removeItem("user");
     loggedInViewContainer.innerHTML = "";
     loginContainer.innerHTML = "";
     noteContainer.innerHTML = "";
-    printLoginPage();
-   
+    printLoginPage();   
 }
 
 
