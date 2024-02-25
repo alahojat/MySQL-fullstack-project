@@ -24,6 +24,9 @@ h4 {
 p {
     color: $base-font-family;
 }
+input {
+    @include input-fields;
+}
 
 
 
@@ -34,58 +37,66 @@ p {
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    
+    gap: 100px;
     
     img {
-       
-        width: 100%;  
-        height: auto; 
+        max-width: 50%;  
+        height: 100vh; 
+        object-fit: cover;
     }
     #loginInputContainer {
-        padding-left: 40px;
-        padding-right: 20px;
+        padding-left: 80px;
+        padding-right: 80px;
+        
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+       
         align-items: center;
         button.primaryBtn {
             @include primary-button;
+            margin-top: 20px;
         }
         button.primaryBtn:hover {
             background-color: #748ca9; 
         }
+        button.secondaryBtn {
+            margin-top: 100px
+        }
         button {
            
             @include secondary-button;
-        }
-       
-        
-    }
-    
+        }    
+    }  
 }
 
 #createUserContainer {
+    margin: 0;
+    padding: 0;
     width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
-    img {
-        width: 100%;
-        height: auto;   
-    }
+    justify-content: space-between;
+    gap: 40px;
+        img {
+            max-width: 50%;  
+            height: 100vh; 
+            object-fit: cover;   
+        }
+        #createUserInputs {
+            padding-left: 120px;
 
-    #createUserInputs {
-        padding: 30px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    button {
-        @include primary-button;
-    }
-    button:hover {
-        background-color: #748ca9; 
-    }
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            @include primary-button;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #748ca9; 
+        }
 }
 
 .hidden {
@@ -104,64 +115,60 @@ p {
 #loggedInContainer {
     margin: 0;
     padding: 0px 100px 0px 100px;
-    h4 {
-        margin: 20px 0px 20px 0px;
-    }
-  
-   input{
-    padding: 0px 10px;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-   }
-  
-    button {
-        @include primary-button;
-    }
-    button:hover {
-        background-color: #748ca9; 
-    }
-    button.logoutBtn {
-        position: absolute;
-        right: 20px;
-        top: 20px;
-    }
-    button.logoutBtn:hover {
-        background-color: #748ca9; 
-    }
-}
-
-
-
-input {
-    @include input-fields;
-}
-
-primaryBtn {
-    background-color: black;
+        h4 {
+            margin: 20px 0px 5px 0px;
+        }
+        input{
+        padding: 0px 10px;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        }
+        button.saveNoteBtn {
+            @include primary-button;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #748ca9; 
+        }
+        button.logoutBtn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            @include secondary-button
+        }
+        button.logoutBtn:hover {
+            background-color: #748ca9; 
+        }
 }
 
 #noteContentContainer {
-   align-items: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     .noteStyling {
-        
-        width: 70vw;
+        width: 50vw;
         padding: 30px;
         background-color: #E6E6E6;
-        border: 1px solid black;
         list-style: none;
         margin-bottom: 20px;
         button {
+            align-items: center;
             @include primary-button;
             margin: 20px
-    
         }
         button.deleteNoteBtn {
             @include secondary-button;
-            
         }  
+        p {
+            font-family: $heading-font-family;
+        }
     }
 }
-
 
 
 
