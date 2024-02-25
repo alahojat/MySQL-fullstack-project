@@ -15,7 +15,6 @@ router.get('/', function(req, res) {
 
     connection.query(sql, (err, data) => {
       if (err) console.log("err", data);
-      console.log("to do note", data);
       res.json(data);
     })
   })
@@ -34,7 +33,6 @@ router.get('/:userID', function(req, res) {
 
     connection.query(sql, [userID], (err, data) => {
       if (err) console.log("err", data);
-      console.log("Notes for user", userID, ":", data);
       res.json(data);
     })
   })
@@ -61,8 +59,6 @@ router.post('/add', function(req, res, next) {
         console.log("err", data);
         return res.status(500).json({ error: "Error adding new note" });
       }
-
-      console.log("New note added:", data);
       
       let newNote = {
         title: noteTitle,
@@ -91,8 +87,6 @@ router.put('/edit/:noteID', function(req, res) {
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
-
-      console.log("Your note is updated!");
      res.json({ noteID: noteID, noteText: noteText });
     })
   })
@@ -113,8 +107,6 @@ let specificNote = req.body.uuid;
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
-
-    console.log("deleted note", data);
     res.json(values);
     })
   })

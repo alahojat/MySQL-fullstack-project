@@ -15,7 +15,6 @@ router.get('/', function(req, res) {
 
     connection.query(sql, (err, data) => {
       if (err) console.log("err", data);
-      console.log("to do note", data);
       res.json(data);
     })
   })
@@ -27,7 +26,6 @@ router.get('/:userId', function(req, res) {
 
   connection.connect((err) => {
     if (err) {
-      console.log("Error connecting to the database:", err);
       return res.status(500).json({ error: 'Internal server error' });
     }
 
@@ -36,7 +34,6 @@ router.get('/:userId', function(req, res) {
 
     connection.query(sql, values, (err, data) => {
       if (err) {
-        console.log("Error querying database:", err);
         return res.status(500).json({ error: 'Internal server error' });
       }
 
@@ -69,7 +66,6 @@ router.post('/add', function(req, res, next) {
 
     connection.query(sql, values, (err, data) => {
       if (err) console.log("err", data);
-      console.log("new user", data);
       res.json({ message: "You are logged in", user:uuid });
     })
   })
@@ -83,7 +79,6 @@ router.post('/login', function(req, res, next) {
 
   connection.connect((err) => {
       if (err) {
-          console.log("Error connecting to database:", err);
           return res.status(500).json({ error: 'Internal server error' });
       }
 
@@ -92,11 +87,8 @@ router.post('/login', function(req, res, next) {
 
       connection.query(sql, values, (err, data) => {
           if (err) {
-              console.log("Error querying database:", err);
               return res.status(500).json({ error: 'Internal server error' });
           }
-
-          console.log("VAD ÄR DET FÖR EMAIL", checkEmail);
 
           if (data.length === 0) {
               return res.status(401).json({ error: 'Invalid email or password' });
